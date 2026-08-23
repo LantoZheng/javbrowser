@@ -16,6 +16,9 @@ class DomainConfig(private val adFilterRules: AdFilterRules) {
     companion object {
         // 預設網域（當雲端設定讀取失敗時的 fallback）
         const val DEFAULT_MISSAV_DOMAIN = "missav.ws"
+        const val DEFAULT_7MMTV_DOMAIN = "7mmtv.sx"
+        const val DEFAULT_AVPLE_DOMAIN = "avple.tv"
+        const val DEFAULT_WHOS_DOMAIN = "whos.tv"
     }
 
     /**
@@ -45,6 +48,33 @@ class DomainConfig(private val adFilterRules: AdFilterRules) {
 
     fun getAvJoyDomain(): String = adFilterRules.getDomains()["avjoy"] ?: "avjoy.me"
 
+    fun get7MmTvDomain(): String =
+        adFilterRules.getDomains()["7mmtv"] ?: DEFAULT_7MMTV_DOMAIN
+
+    fun getAvpleDomain(): String =
+        adFilterRules.getDomains()["avple"] ?: DEFAULT_AVPLE_DOMAIN
+
+    fun getWhosDomain(): String =
+        adFilterRules.getDomains()["whos"] ?: DEFAULT_WHOS_DOMAIN
+
+    fun get7MmTvBaseUrl(): String = "https://${get7MmTvDomain()}/"
+
+    /** 7MMTV 的搜尋表單會 POST，但送出後會導向可重複使用的 GET 結果頁。 */
+    fun get7MmTvSearchUrl(query: String): String =
+        "${get7MmTvBaseUrl().trimEnd('/')}/zh/searchall_search/all/${android.net.Uri.encode(query)}/1.html"
+
+    fun getAvpleBaseUrl(): String = "https://${getAvpleDomain()}/"
+
+    fun getAvpleSearchUrl(query: String): String =
+        getAvpleBaseUrl().trimEnd('/') + "/search?key=" +
+            android.net.Uri.encode(query)
+
+    fun getWhosBaseUrl(): String = "https://${getWhosDomain()}/"
+
+    fun getWhosSearchUrl(query: String): String =
+        getWhosBaseUrl().trimEnd('/') + "/result?search=" +
+            android.net.Uri.encode(query)
+
     /**
      * 更新 URL 中的網域為最新網域 (如果是已知的被封鎖網域)
      * 主要用於：書籤載入、歷史紀錄等，確保讀取的舊網址自動替換為最新有效網域
@@ -62,6 +92,13 @@ class DomainConfig(private val adFilterRules: AdFilterRules) {
                 return uri.buildUpon().authority(getRouVideoDomain()).build().toString()
             } else if (host.contains("avjoy.", ignoreCase = true)) {
                 return uri.buildUpon().authority(getAvJoyDomain()).build().toString()
+            } else if (host.contains("7mmtv", ignoreCase = true) ||
+                host.contains("7tv", ignoreCase = true)) {
+                return uri.buildUpon().authority(get7MmTvDomain()).build().toString()
+            } else if (host.contains("avple", ignoreCase = true)) {
+                return uri.buildUpon().authority(getAvpleDomain()).build().toString()
+            } else if (host.contains("whos", ignoreCase = true)) {
+                return uri.buildUpon().authority(getWhosDomain()).build().toString()
             }
         } catch (e: Exception) {
             // 解析失敗則直接回傳原網址

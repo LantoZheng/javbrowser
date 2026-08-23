@@ -1,60 +1,193 @@
 {
-    "version": "2.3.2",
-    "lastUpdate": "2026-03-29T23:30:00Z",
-    "domains": {
-        "missav": "missav.ai",
-        "jable": "jable.tv",
-        "rou_video": "rouva3.xyz",
-        "avjoy": "avjoy.me"
-    },
-    "rules": {
-        "commonBlock": [
-            "jads.co",
-            "juicyads.com",
-            "creative.myavlive.com",
-            "silent-basis.pro",
-            "ptelastaxo.com",
-            "magsrv.com",
-            "afcdn.net",
-            "siscprts.com",
-            "exoclick.com",
-            "go.mnaspm.com",
-            "onclckbn.net",
-            "smartpop",
-            "tsyndicate.com",
-            "ad-provider.js",
-            "ra12.xyz",
-            "rdz1.xyz",
-            "uug27.com",
-            "fluxtrck.site",
-            "fuu78.com",
-            "zlinkr.com",
-            "mnaspm.com",
-            "shukriya90.com",
-            "shopee",
-            "shp.ee",
-            "lazada",
-            "e608df03d6",
-            "capndr.com",
-            "onclckbnr.com",
-            "tscprts.com",
-            "clammyendearedkeg",
-            "cdn.storageimagedisplay.com",
-            "creative-sb1.com",
-            "sunnycloudstone.com",
-            "xxxvjmp.com",
-            "myavlive.com",
-            "snaptrckr.fun",
-            "rmhfrtnd.com",
-            "preferencenail.com"
+  "version": "3.1.0",
+  "lastUpdate": "2026-08-18T00:00:00Z",
+  "domains": {
+    "missav": "missav.ai",
+    "jable": "jable.tv",
+    "rou_video": "rouva3.xyz",
+    "avjoy": "avjoy.me",
+    "7mmtv": "7mmtv.sx",
+    "avple": "avple.tv",
+    "whos": "whos.tv"
+  },
+  "rules": {
+    "commonBlock": [
+      "jads.co",
+      "juicyads.com",
+      "creative.myavlive.com",
+      "silent-basis.pro",
+      "ptelastaxo.com",
+      "magsrv.com",
+      "afcdn.net",
+      "siscprts.com",
+      "exoclick.com",
+      "go.mnaspm.com",
+      "onclckbn.net",
+      "smartpop",
+      "tsyndicate.com",
+      "ad-provider.js",
+      "ra12.xyz",
+      "rdz1.xyz",
+      "ra13.xyz",
+      "uug27.com",
+      "fluxtrck.site",
+      "fuu78.com",
+      "zlinkr.com",
+      "mnaspm.com",
+      "shukriya90.com",
+      "shopee",
+      "shp.ee",
+      "lazada",
+      "e608df03d6",
+      "capndr.com",
+      "onclckbnr.com",
+      "tscprts.com",
+      "clammyendearedkeg",
+      "cdn.storageimagedisplay.com",
+      "creative-sb1.com",
+      "sunnycloudstone.com",
+      "xxxvjmp.com",
+      "myavlive.com",
+      "snaptrckr.fun",
+      "rmhfrtnd.com",
+      "preferencenail.com",
+      "c0.jdbstatic.com/ads/",
+      "udzpel.com",
+      "i.cyrady.com",
+      "cdn.pornfhd.com/files/banner_300x100.html",
+      "creative.whitetrafsa.com/widgets",
+      "go.javhdporn.live",
+      "javhd-trk.com",
+      "content-sync.xyz",
+      "nightdestruct.com",
+      "tapioni.com",
+      "sandwichconscientiousroadside.com",
+      "doppiocdn.com",
+      "xlirdr.com",
+      "javhdporn.live",
+      "skinnycrawlinglax.com",
+      "partwithner.com",
+      "sizn.cc",
+      "thscprts.com",
+      "trafficjunky.net",
+      "aaa9u.com",
+      "whitetrafsa.com",
+      "creative.19sex.live",
+      "realsrv.com",
+      "labadena.com",
+      "go.mavrtracktor.com"
+    ],
+    "networkBlock": [
+      "sunnycloudstone.com"
+    ],
+    "linkBlock": [],
+    "iframeBlock": [
+      "sunnycloudstone.com"
+    ],
+    "redirectBlock": [],
+    "siteRules": {
+          "avtoday.io": {
+        "allowRequests": [
+          {
+            "hostSuffix": "avtoday.io",
+            "pathPrefix": "/pic/"
+          },
+          {
+            "hostSuffix": "avtoday.io",
+            "pathPrefix": "/preview/"
+          },
+          {
+            "hostSuffix": "avtoday.io",
+            "pathPrefix": "/player"
+          },
+          {
+            "hostSuffix": "avtoday.io",
+            "pathPrefix": "/streaming/"
+          }
         ],
-        "networkBlock": [
-            "sunnycloudstone.com"
+        "requestBlock": [
+          {
+            "hostSuffix": "avtoday.io",
+            "pathEquals": "/redirect-stripchat",
+            "mainFrame": false
+          },
+          {
+            "hostSuffix": "avtoday.io",
+            "pathEquals": "/img/500x143-9u.gif",
+            "mainFrame": false
+          }
         ],
-        "linkBlock": [],
-        "iframeBlock": [
-            "sunnycloudstone.com"
+        "navigationBlock": [
+          {
+            "hostSuffix": "aaa9u.com"
+          },
+          {
+            "hostSuffix": "telegram.me"
+          }
         ],
-        "redirectBlock": []
+        "domRemove": [
+          {
+            "selector": "a[href*=\"aaa9u.com\"]",
+            "closest": "a"
+          },
+          {
+            "selector": "img[src*=\"/img/500x143-9u.gif\"]",
+            "closest": "a"
+          },
+          {
+            "selector": "iframe[src*=\"/redirect-stripchat\"]",
+            "closest": ".thumbnail.col"
+          },
+          {
+            "selector": ".video-title a[href=\"/live\"]",
+            "closest": ".thumbnail.col"
+          },
+          {
+            "selector": "a.btn-categories[href*=\"telegram.me\"]",
+            "closest": ".swiper-slide"
+          }
+            ]
+          },
+          "7mmtv.sx": {
+            "requestBlock": [
+              { "hostSuffix": "creative.19sex.live" },
+              { "hostSuffix": "realsrv.com" },
+              { "hostSuffix": "labadena.com" },
+              { "hostSuffix": "tapioni.com" },
+              { "hostSuffix": "tsyndicate.com" }
+            ],
+            "navigationBlock": [
+              { "hostSuffix": "creative.19sex.live" },
+              { "hostSuffix": "realsrv.com" },
+              { "hostSuffix": "labadena.com" }
+            ],
+            "domRemove": [
+              { "selector": "iframe[src*=\"creative.19sex.live\"]" },
+              { "selector": "iframe[src*=\"realsrv.com\"]" },
+              { "selector": "iframe[src*=\"labadena.com\"]" },
+              { "selector": "script[src*=\"creative.19sex.live\"]" }
+            ]
+          },
+          "avple.tv": {
+            "allowRequests": [
+              { "hostSuffix": "cdnedge.live", "pathPrefix": "/file/avple-asserts/hls/" }
+            ],
+      "requestBlock": [
+        { "hostSuffix": "whitetrafsa.com" },
+        { "hostSuffix": "mavrtracktor.com" },
+              { "hostSuffix": "doppio.com" },
+              { "hostSuffix": "tsyndicate.com" }
+            ],
+            "navigationBlock": [
+              { "hostSuffix": "whitetrafsa.com" },
+              { "hostSuffix": "mavrtracktor.com" },
+              { "hostSuffix": "tsyndicate.com" }
+            ],
+      "domRemove": [
+        { "selector": "iframe[src*=\"whitetrafsa.com\"]" },
+        { "selector": "iframe[src*=\"mavrtracktor.com\"]" }
+      ]
+          }
     }
+  }
 }

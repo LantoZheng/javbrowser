@@ -2,6 +2,15 @@ package com.example.javbrowser
 
 import java.util.regex.Pattern
 
+data class MissAvThumbnailConfig(
+    val picNum: Int,
+    val width: Int,
+    val height: Int,
+    val columns: Int,
+    val rows: Int,
+    val urlTemplate: String
+)
+
 object VideoExtractor {
 
     fun extractJable(html: String): String? {
@@ -15,76 +24,130 @@ object VideoExtractor {
     }
 
     fun extractMissAV(html: String): String? {
-        // Pattern: eval(function(p,a,c,k,e,d)...)
-        // We need to find the packed code and unpack it.
-        // This is a simplified unpacker for the specific format described.
-        
-        // 1. Find the eval block
-        val evalPattern = Pattern.compile("eval\\(function\\(p,a,c,k,e,d\\)\\{.*\\}\\('([^']+)',(\\d+),(\\d+),'([^']+)'\\.split\\('\\|'\\)")
-        val matcher = evalPattern.matcher(html)
-        
-        if (matcher.find()) {
-            val payload = matcher.group(1) ?: ""
-            val radix = matcher.group(2).toInt()
-            val count = matcher.group(3).toInt()
-            val dictString = matcher.group(4)
-            val dict = dictString.split("|")
+        // 先嘗試從 packer 直接解出最高畫質 URL
+        try {
+            val packed = extractFromMissavPacker(html)
+            if (packed != null) return packed
+        } catch (e: Exception) {
+            // packer 解析失敗，繼續 fallback
+        }
 
-            // 2. Unpack
-            // The logic described: replace Base36 words in payload with dict words.
-            // Since we don't have a full JS engine, we'll try a heuristic replacement.
-            // The payload looks like: f='8://7.6/...'
-            // We need to replace words like 'e', 'c', 'a' with dict[14], dict[12], dict[10] etc.
-            
-            // Regex to find all alphanumeric words in payload that match the radix encoding
-            // But Dean Edwards packer matches \b\w+\b usually.
-            
-            // Let's implement a simple replacer.
-            // Iterate through the dictionary. If dict[i] is empty, it means the token is the index itself (in base 36), 
-            // but usually the packer fills all slots or uses empty for "no replacement".
-            // Actually, the packer logic is: if (dict[i]) replace regex /\\b(base36(i))\\b/ with dict[i]
-            
-            var unpacked = payload
-            
-            // We need to handle the replacement order carefully or use a single pass.
-            // But for this specific case, let's try replacing from largest index to smallest to avoid sub-match issues?
-            // Or just use word boundaries.
-            
-            // The JS code usually iterates backwards: while(c--) ...
-            // So we should also iterate from largest index to smallest to avoid replacing substrings of larger keys if they overlap (though \b helps).
-            
-            for (i in dict.indices.reversed()) {
-                val word = dict[i]
-                if (word.isNotEmpty()) {
-                    val key = i.toString(radix)
-                    // Replace \bkey\b with word
-                    val regex = "\\b$key\\b"
-                    unpacked = unpacked.replace(Regex(regex), word)
-                }
+        // Fallback：從縮圖 seek URL 取 UUID，拼出 surrit.com master playlist
+        // urls: ["https:\/\/nineyu.com\/{UUID}\/seek\/_0.jpg"...]
+        val uuidMatcher = Pattern.compile(
+            "urls:\\s*\\[\"https:\\\\/\\\\/[^/]+\\\\/([a-f0-9\\-]+)\\\\/seek"
+        ).matcher(html)
+        if (uuidMatcher.find()) {
+            return "https://surrit.com/${uuidMatcher.group(1)}/playlist.m3u8"
+        }
+
+        return null
+    }
+
+    fun extractJableVttUrl(html: String): String? {
+        val normalized = html.replace("\\/", "/")
+        val match = Regex("(?:var\\s+)?vttUrl\\s*=\\s*['\"](https?://[^'\"]+)['\"]")
+            .find(normalized) ?: return null
+        return match.groupValues[1].takeIf { it.contains("thumbvtt", ignoreCase = true) }
+    }
+
+    fun extractMissAvThumbnailConfig(html: String): MissAvThumbnailConfig? {
+        val normalized = html.replace("\\/", "/")
+        val startMatch = Regex("thumbnail\\s*:\\s*\\{").find(normalized) ?: return null
+        val endMatch = Regex("keyboard\\s*:").find(normalized, startMatch.range.last + 1)
+            ?: return null
+        val block = normalized.substring(startMatch.range.first, endMatch.range.first)
+
+        fun readInt(name: String): Int? = Regex("$name\\s*:\\s*(\\d+)")
+            .find(block)?.groupValues?.get(1)?.toIntOrNull()
+
+        val picNum = readInt("pic_num") ?: return null
+        val width = readInt("width") ?: return null
+        val height = readInt("height") ?: return null
+        val columns = readInt("col") ?: return null
+        val rows = readInt("row") ?: return null
+        val firstUrl = Regex("https?://[^\\\"']+/seek/_0\\.jpg(?:\\?[^\\\"']*)?")
+            .find(block)?.value ?: return null
+        val template = firstUrl.replaceFirst("_0.jpg", "_{index}.jpg")
+
+        if (picNum <= 0 || width <= 0 || height <= 0 || columns <= 0 || rows <= 0) return null
+        return MissAvThumbnailConfig(picNum, width, height, columns, rows, template)
+    }
+
+    /**
+     * 用字串搜尋（不用大範圍 regex）定位 packer 的 dict 與 payload，
+     * 避免在超大 HTML 上發生 catastrophic backtracking。
+     *
+     * packer 格式：eval(function(p,a,c,k,e,d){...}('PAYLOAD',RADIX,COUNT,'DICT'.split('|'),0,{}))
+     * dict 必定含有 'surrit'（CDN 域名），以此定位正確的 eval 區塊。
+     */
+    private fun extractFromMissavPacker(html: String): String? {
+        // 1. 找到含有 surrit 的 dict 字串位置
+        val surritIdx = html.indexOf("|surrit|")
+        if (surritIdx < 0) return null
+
+        val splitTag = "'.split('|')"
+        val dictEnd = html.indexOf(splitTag, surritIdx)
+        if (dictEnd < 0) return null
+
+        val dictStart = html.lastIndexOf("'", surritIdx - 1)
+        if (dictStart < 0 || dictStart >= dictEnd) return null
+
+        val dictString = html.substring(dictStart + 1, dictEnd)
+        if (!dictString.contains("m3u8") || !dictString.contains("source")) return null
+        val dict = dictString.split("|")
+
+        // 2. 在 dict 之前找 radix 和 payload
+        // 結構：...'PAYLOAD',RADIX,COUNT,'DICT'...
+        // dictStart 之前的部分：...'PAYLOAD',RADIX,COUNT,
+        val beforeDict = html.substring(0, dictStart)
+
+        // 最後一個逗號前是 COUNT，再往前一個逗號前是 RADIX
+        val countComma = beforeDict.lastIndexOf(',')
+        if (countComma < 0) return null
+        val radixComma = beforeDict.lastIndexOf(',', countComma - 1)
+        if (radixComma < 0) return null
+
+        val radix = beforeDict.substring(radixComma + 1, countComma).trim().toIntOrNull() ?: return null
+
+        // 3. 找 payload 結束引號（radix 逗號前的那個 '）
+        val payloadEndQuote = beforeDict.lastIndexOf('\'', radixComma - 1)
+        if (payloadEndQuote < 0) return null
+
+        // 4. 反向找 payload 開始引號（跳過 \' 跳脫）
+        var i = payloadEndQuote - 1
+        while (i >= 0) {
+            if (html[i] == '\'') {
+                var bs = 0
+                var j = i - 1
+                while (j >= 0 && html[j] == '\\') { bs++; j-- }
+                if (bs % 2 == 0) break  // 未跳脫的引號
             }
-            
-            // 3. Extract URL from unpacked code
-            // Look for source='...' or similar
-            // The user example: source='https://...'
-            // Or f='...' as in the example.
-            
-            // Let's look for .m3u8
-            val urlPattern = Pattern.compile("['\"](https?://[^'\"]+\\.m3u8)['\"]")
-            val urlMatcher = urlPattern.matcher(unpacked)
-            if (urlMatcher.find()) {
-                return urlMatcher.group(1)
+            i--
+        }
+        if (i < 0) return null
+
+        val payload = html.substring(i + 1, payloadEndQuote).replace("\\'", "'")
+
+        // 5. 解包：把 base(radix) token 換回字典詞
+        var unpacked = payload
+        for (idx in dict.indices.reversed()) {
+            val word = dict[idx]
+            if (word.isNotEmpty()) {
+                val key = toBaseN(idx, radix)
+                unpacked = unpacked.replace(Regex("\\b${Regex.escape(key)}\\b"), word)
             }
         }
-        
-        // Fallback: Check for thumbnail UUID if the above fails (Heuristic)
-        // urls: ["https:\/\/nineyu.com\/UUID\/seek\/_0.jpg"...]
-        val uuidPattern = Pattern.compile("urls:\\s*\\[\"https:\\\\/\\\\/[^/]+\\\\/([a-f0-9\\-]+)\\\\/seek")
-        val uuidMatcher = uuidPattern.matcher(html)
-        if (uuidMatcher.find()) {
-            val uuid = uuidMatcher.group(1)
-            // Construct URL: https://surrit.com/{UUID}/playlist.m3u8
-            // Note: Domain might change, this is risky.
-            return "https://surrit.com/$uuid/playlist.m3u8"
+
+        // 6. 依畫質優先：1080p → 720p → 任意 m3u8
+        Regex("""source1280\s*=\s*['"]([^'"]+\.m3u8)['"]""")
+            .find(unpacked)?.groupValues?.getOrNull(1)?.takeIf { it.isNotEmpty() }?.let { return it }
+
+        Regex("""source842\s*=\s*['"]([^'"]+\.m3u8)['"]""")
+            .find(unpacked)?.groupValues?.getOrNull(1)?.takeIf { it.isNotEmpty() }?.let { return it }
+
+        Pattern.compile("['\"](https?://[^'\"]+\\.m3u8)['\"]").matcher(unpacked).let {
+            if (it.find()) return it.group(1)
         }
 
         return null
@@ -186,6 +249,40 @@ object VideoExtractor {
         }
 
         return null
+    }
+
+    fun extractPigAV(html: String): String? {
+        val normalized = html.replace("\\/", "/").replace("&amp;", "&")
+
+        Regex("""https?://[^"'\\s<>]+\.m3u8[^"'\\s<>]*""", RegexOption.IGNORE_CASE)
+            .find(normalized)
+            ?.groupValues
+            ?.getOrNull(0)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { return it }
+
+        Regex("""https?://[^"'\\s<>]+\.mp4[^"'\\s<>]*""", RegexOption.IGNORE_CASE)
+            .find(normalized)
+            ?.groupValues
+            ?.getOrNull(0)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { return it }
+
+        return null
+    }
+
+    /** 支援任意進位（最高 62）的整數轉字串，對應 packer 的 alphabet：0-9a-zA-Z */
+    private fun toBaseN(n: Int, radix: Int): String {
+        if (radix <= 36) return n.toString(radix)
+        val alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        if (n == 0) return "0"
+        var num = n
+        val sb = StringBuilder()
+        while (num > 0) {
+            sb.append(alphabet[num % radix])
+            num /= radix
+        }
+        return sb.reverse().toString()
     }
 
     fun fetchBestQualityUrl(masterUrl: String, callback: (String) -> Unit) {

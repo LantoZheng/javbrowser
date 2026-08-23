@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-class LockActivity : AppCompatActivity() {
+class LockActivity : LocalizedActivity() {
 
     private lateinit var privacySettings: PrivacySettings
     private lateinit var biometricHelper: BiometricHelper

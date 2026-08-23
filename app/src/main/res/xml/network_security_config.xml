@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+
+    <!-- Local video proxy health/playback checks use HTTP loopback only. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+    <!-- 買取りまっくす的舊站 HTTPS 憑證鏈不完整；只對該榜單網域允許 HTTP。 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">kaitorimax.com</domain>
+    </domain-config>
+</network-security-config>

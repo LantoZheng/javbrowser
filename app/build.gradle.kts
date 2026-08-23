@@ -11,8 +11,8 @@ android {
         applicationId = "com.example.javbrowser"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 115
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,12 +42,27 @@ dependencies {
     
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // PhotoView for pinch-to-zoom image display
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
     
     // Biometric authentication
     implementation("androidx.biometric:biometric:1.1.0")
 
     // Local HTTP proxy for CDN-protected video streaming
     implementation("org.nanohttpd:nanohttpd:2.3.1")
+
+    // HTML parsing for JavDB scraper
+    implementation("org.jsoup:jsoup:1.17.2")
+
+    // LocalBroadcastManager for in-app event notification
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+
+    // WebKit extras: addDocumentStartJavaScript (inject before page JS)
+    implementation("androidx.webkit:webkit:1.10.0")
+    implementation("androidx.documentfile:documentfile:1.0.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
