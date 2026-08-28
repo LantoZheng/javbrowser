@@ -271,6 +271,32 @@ object VideoExtractor {
         return null
     }
 
+    /**
+     * 通用嗅探器：掃描 HTML 中第一個可播放的 HLS/MP4 連結。
+     * 供 JavGuru / SupJav / Netflav 等以嵌入式播放器為主的來源使用。
+     * 優先回傳 HLS（.m3u8），找不到才回退 MP4。
+     */
+    fun extractGeneric(html: String): String? {
+        val normalized = html
+            .replace("\\/", "/")
+            .replace("\\u0026", "&")
+            .replace("&amp;", "&")
+
+        Regex("""https?://[^"'\\s<>]+\.m3u8(?:[?#][^"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+            .find(normalized)
+            ?.value
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { return it }
+
+        Regex("""https?://[^"'\\s<>]+\.mp4(?:[?#][^"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+            .find(normalized)
+            ?.value
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { return it }
+
+        return null
+    }
+
     /** 支援任意進位（最高 62）的整數轉字串，對應 packer 的 alphabet：0-9a-zA-Z */
     private fun toBaseN(n: Int, radix: Int): String {
         if (radix <= 36) return n.toString(radix)
