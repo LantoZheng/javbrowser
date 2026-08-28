@@ -254,14 +254,14 @@ object VideoExtractor {
     fun extractPigAV(html: String): String? {
         val normalized = html.replace("\\/", "/").replace("&amp;", "&")
 
-        Regex("""https?://[^"'\\s<>]+\.m3u8[^"'\\s<>]*""", RegexOption.IGNORE_CASE)
+        Regex("""https?://[^"'\\\s<>]+\.m3u8[^"'\\\s<>]*""", RegexOption.IGNORE_CASE)
             .find(normalized)
             ?.groupValues
             ?.getOrNull(0)
             ?.takeIf { it.isNotEmpty() }
             ?.let { return it }
 
-        Regex("""https?://[^"'\\s<>]+\.mp4[^"'\\s<>]*""", RegexOption.IGNORE_CASE)
+        Regex("""https?://[^"'\\\s<>]+\.mp4[^"'\\\s<>]*""", RegexOption.IGNORE_CASE)
             .find(normalized)
             ?.groupValues
             ?.getOrNull(0)
@@ -282,13 +282,13 @@ object VideoExtractor {
             .replace("\\u0026", "&")
             .replace("&amp;", "&")
 
-        Regex("""https?://[^"'\\s<>]+\.m3u8(?:[?#][^"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+        Regex("""https?://[^"'\\\s<>]+\.m3u8(?:[?#][^"'\\\s<>]*)?""", RegexOption.IGNORE_CASE)
             .find(normalized)
             ?.value
             ?.takeIf { it.isNotEmpty() }
             ?.let { return it }
 
-        Regex("""https?://[^"'\\s<>]+\.mp4(?:[?#][^"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+        Regex("""https?://[^"'\\\s<>]+\.mp4(?:[?#][^"'\\\s<>]*)?""", RegexOption.IGNORE_CASE)
             .find(normalized)
             ?.value
             ?.takeIf { it.isNotEmpty() }

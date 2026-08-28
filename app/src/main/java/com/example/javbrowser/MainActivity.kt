@@ -2331,12 +2331,12 @@ class MainActivity : LocalizedActivity() {
                     function reportFromText(text) {
                         if (!text) return false;
                         var source = normalizeUrl(String(text));
-                        var m3u8 = source.match(/https?:\/\/[^"'\\s<>]+\.m3u8[^"'\\s<>]*/i);
+                        var m3u8 = source.match(/https?:\/\/[^"'\\\s<>]+\.m3u8[^"'\\\s<>]*/i);
                         if (m3u8 && m3u8[0]) {
                             Android.onVideoFound(m3u8[0]);
                             return true;
                         }
-                        var mp4 = source.match(/https?:\/\/[^"'\\s<>]+\.mp4[^"'\\s<>]*/i);
+                        var mp4 = source.match(/https?:\/\/[^"'\\\s<>]+\.mp4[^"'\\\s<>]*/i);
                         if (mp4 && mp4[0]) {
                             Android.onVideoFound(mp4[0]);
                             return true;
@@ -2527,7 +2527,7 @@ class MainActivity : LocalizedActivity() {
 
                     function looksLikePlayableHls(value) {
                         var url = normalizeUrl(value);
-                        return /^https?:\/\/[^"'\\s<>]+\.m3u8[^"'\\s<>]*$/i.test(url) &&
+                        return /^https?:\/\/[^"'\\\s<>]+\.m3u8[^"'\\\s<>]*$/i.test(url) &&
                             /(?:doppiocdn|\/hls\/)/i.test(url);
                     }
 
@@ -2699,7 +2699,7 @@ class MainActivity : LocalizedActivity() {
                     currentVideoReferer = originForUrl(url) ?: "https://pigav.ws/"
                 }
             } else if (url.contains("avtoday.io", ignoreCase = true)) {
-                val match = Regex("""https?://[^\"'\\s<>]+\.m3u8(?:[?#][^\"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+                val match = Regex("""https?://[^\"'\\\s<>]+\.m3u8(?:[?#][^\"'\\\s<>]*)?""", RegexOption.IGNORE_CASE)
                     .find(rawHtml)
                 extractedUrl = match?.value?.replace("&amp;", "&")
                 if (extractedUrl != null) {
