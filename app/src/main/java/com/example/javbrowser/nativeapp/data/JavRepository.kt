@@ -23,7 +23,9 @@ class JavRepository(private val manager: JavSourceManager) {
 
     fun search(query: String): Flow<SearchSnapshot> = channelFlow {
         val sources = manager.enabled().filter { SourceCapability.SEARCH in it.capabilities }
-        val states = sources.associate { it.id to SourceLoadState.Loading }.toMutableMap()
+        val states: MutableMap<String, SourceLoadState> = sources
+            .associate { it.id to (SourceLoadState.Loading as SourceLoadState) }
+            .toMutableMap()
         val all = mutableListOf<JavSearchResult>()
         val mutex = Mutex()
         send(SearchSnapshot(sourceStates = states.toMap()))
