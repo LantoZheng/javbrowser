@@ -56,14 +56,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: |
-            android_test_status=0
-            ./gradlew connectedDebugAndroidTest --stacktrace || android_test_status=$?
-            mkdir -p app/build/reports/emulator-qa
-            adb exec-out uiautomator dump /dev/tty > app/build/reports/emulator-qa/ui.xml || true
-            adb exec-out screencap -p > app/build/reports/emulator-qa/final-screen.png || true
-            adb logcat -d > app/build/reports/emulator-qa/logcat.txt || true
-            exit "$android_test_status"
+          script: bash .github/scripts/run-emulator-tests.sh
       - name: Upload emulator evidence
         if: always()
         uses: actions/upload-artifact@v4

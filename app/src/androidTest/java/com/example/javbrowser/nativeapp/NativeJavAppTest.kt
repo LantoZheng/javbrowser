@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -41,6 +42,8 @@ class NativeJavAppTest {
     fun clearLibrary() {
         context.getSharedPreferences("native_library", Context.MODE_PRIVATE).edit().clear().commit()
         context.getSharedPreferences("favorites_prefs", Context.MODE_PRIVATE).edit().clear().commit()
+        context.getSharedPreferences("native_settings", Context.MODE_PRIVATE)
+            .edit().putBoolean("secure_screen", false).commit()
     }
 
     @Test
@@ -60,7 +63,7 @@ class NativeJavAppTest {
         composeRule.onNodeWithText("No downloads yet").assertIsDisplayed()
 
         composeRule.onNodeWithTag("nav-home").performClick()
-        composeRule.onNodeWithText("Settings").performClick()
+        composeRule.onNodeWithContentDescription("Settings").performClick()
         composeRule.onNodeWithTag("screen-settings").assertIsDisplayed()
         composeRule.onNodeWithText("Privacy").assertIsDisplayed()
     }
