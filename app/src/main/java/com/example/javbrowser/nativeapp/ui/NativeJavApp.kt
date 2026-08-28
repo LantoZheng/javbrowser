@@ -1,7 +1,4 @@
-@file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.media3.common.util.UnstableApi::class,
-)
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 
 package com.example.javbrowser.nativeapp.ui
 
@@ -138,5 +135,42 @@ fun NativeJavApp(repository: JavRepository, library: LibraryStore, incoming: Str
 @Composable private fun SettingsScreen(repository:JavRepository,onBack:()->Unit){val context=LocalContext.current;val prefs=context.getSharedPreferences("native_settings",Context.MODE_PRIVATE);var secure by remember{mutableStateOf(prefs.getBoolean("secure_screen",true))};LazyColumn{item{TopAppBar(title={Text(stringResource(R.string.settings))},navigationIcon={IconButton(onBack){Icon(Icons.Default.ArrowBack,null)}})};item{SettingsHeader(stringResource(R.string.settings_general))};item{ListItem(headlineContent={Text(stringResource(R.string.dark_theme))},supportingContent={Text(stringResource(R.string.dark_theme_body))},leadingContent={Icon(Icons.Default.DarkMode,null)})};item{SettingsHeader(stringResource(R.string.settings_sources))};items(repository.sourceSettings()){(h,verifyUrl)->ListItem(headlineContent={Text(h.sourceId.uppercase())},supportingContent={Text(h.lastError?:stringResource(R.string.source_ready))},leadingContent={Icon(if(h.recentFailures==0)Icons.Default.CheckCircle else Icons.Default.Warning,null)},trailingContent={verifyUrl?.let{url->TextButton(onClick={context.startActivity(Intent(context,SourceVerificationActivity::class.java).putExtra(SourceVerificationActivity.EXTRA_URL,url))}){Text(stringResource(R.string.verify))}}})};item{SettingsHeader(stringResource(R.string.settings_privacy))};item{ListItem(headlineContent={Text(stringResource(R.string.secure_screen))},supportingContent={Text(stringResource(R.string.secure_screen_body))},leadingContent={Icon(Icons.Default.VisibilityOff,null)},trailingContent={Switch(secure,{secure=it;prefs.edit().putBoolean("secure_screen",it).apply()})})};item{SettingsHeader(stringResource(R.string.settings_about))};item{ListItem(headlineContent={Text(stringResource(R.string.app_name))},supportingContent={Text(stringResource(R.string.about_body))},leadingContent={Icon(Icons.Default.Info,null)})}}}
 @Composable private fun SettingsHeader(text:String){Text(text,Modifier.padding(start=20.dp,top=20.dp,bottom=4.dp),color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)}
 
-@Composable private fun PlayerScreen(variant:PlaybackVariant,onBack:()->Unit){val context=LocalContext.current;val player=remember(variant.url){val data=DefaultHttpDataSource.Factory().setDefaultRequestProperties(variant.headers);ExoPlayer.Builder(context).build().apply{val item=MediaItem.fromUri(variant.url);setMediaSource(if(variant.type==StreamType.HLS)HlsMediaSource.Factory(data).createMediaSource(item)else ProgressiveMediaSource.Factory(data).createMediaSource(item));prepare();playWhenReady=true}};DisposableEffect(player){onDispose{player.release()}};Box(Modifier.fillMaxSize().background(Color.Black)){AndroidView({PlayerView(it).apply{this.player=player;useController=true}},Modifier.fillMaxSize());IconButton(onBack,Modifier.padding(12.dp).align(Alignment.TopStart).background(Color.Black.copy(.5f),RoundedCornerShape(50))){Icon(Icons.Default.Close,null,tint=Color.White)}}}
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+@Composable
+private fun PlayerScreen(variant: PlaybackVariant, onBack: () -> Unit) {
+    val context = LocalContext.current
+    val player = remember(variant.url) {
+        val dataSource = DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(variant.headers)
+        ExoPlayer.Builder(context).build().apply {
+            val item = MediaItem.fromUri(variant.url)
+            val source = if (variant.type == StreamType.HLS) {
+                HlsMediaSource.Factory(dataSource).createMediaSource(item)
+            } else {
+                ProgressiveMediaSource.Factory(dataSource).createMediaSource(item)
+            }
+            setMediaSource(source)
+            prepare()
+            playWhenReady = true
+        }
+    }
+    DisposableEffect(player) {
+        onDispose { player.release() }
+    }
+    Box(Modifier.fillMaxSize().background(Color.Black)) {
+        AndroidView(
+            factory = { PlayerView(it).apply { this.player = player; useController = true } },
+            modifier = Modifier.fillMaxSize(),
+        )
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier
+                .padding(12.dp)
+                .align(Alignment.TopStart)
+                .background(Color.Black.copy(.5f), RoundedCornerShape(50)),
+        ) {
+            Icon(Icons.Default.Close, null, tint = Color.White)
+        }
+    }
+}
 @Composable private fun EmptyScreen(icon:androidx.compose.ui.graphics.vector.ImageVector,title:String,body:String){Box(Modifier.fillMaxSize().padding(32.dp),contentAlignment=Alignment.Center){Column(horizontalAlignment=Alignment.CenterHorizontally){Icon(icon,null,Modifier.size(52.dp),tint=MaterialTheme.colorScheme.onSurfaceVariant);Spacer(Modifier.height(12.dp));Text(title,style=MaterialTheme.typography.titleLarge);Text(body,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
