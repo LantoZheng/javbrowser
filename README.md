@@ -25,6 +25,8 @@ PigAV, AVToday, JavTrailers, and JavHDPorn are not yet migrated into the new API
 
 Requires JDK 17, Android SDK 34, and access to Google Maven/Maven Central.
 
+The `Android CI` workflow runs unit tests, lint, and a debug build on every branch update, then publishes the APK as a workflow artifact.
+
 ```bash
 ./gradlew assembleDebug
 ./gradlew test
