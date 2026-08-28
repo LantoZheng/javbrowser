@@ -8,8 +8,8 @@ package com.example.javbrowser
  * 
  * 使用方式：
  *   val domainConfig = DomainConfig(adFilterRules)
- *   domainConfig.getMissAvBaseUrl()          // https://missav.ws/
- *   domainConfig.getMissAvSearchUrl("ABP-123") // https://missav.ws/search/ABP-123
+ *   domainConfig.getMissAvBaseUrl()          // https://missav.ai/
+ *   domainConfig.getMissAvSearchUrl("ABP-123") // https://missav.ai/search/ABP-123
  */
 class DomainConfig(private val adFilterRules: AdFilterRules) {
 
@@ -32,7 +32,7 @@ class DomainConfig(private val adFilterRules: AdFilterRules) {
 
     /**
      * 取得目前有效的 MissAV 網域（純網域，不含 https://）
-     * 例如：missav.ws、missav.com
+     * 例如：missav.ai、missav.ws
      */
     fun getMissAvDomain(): String {
         return adFilterRules.getDomains()["missav"] ?: DEFAULT_MISSAV_DOMAIN
@@ -40,13 +40,13 @@ class DomainConfig(private val adFilterRules: AdFilterRules) {
 
     /**
      * 取得 MissAV 首頁完整 URL
-     * 例如：https://missav.ws/
+     * 例如：https://missav.ai/
      */
     fun getMissAvBaseUrl(): String = "https://${getMissAvDomain()}/"
 
     /**
      * 取得 MissAV 搜尋完整 URL
-     * 例如：https://missav.ws/search/ABP-123
+     * 例如：https://missav.ai/search/ABP-123
      */
     fun getMissAvSearchUrl(query: String): String =
         "https://${getMissAvDomain()}/search/${query}"

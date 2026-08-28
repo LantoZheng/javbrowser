@@ -5868,13 +5868,13 @@ class MainActivity : LocalizedActivity() {
                     <a href="javascript:Android.navigateToUrl('https://${domainConfig.getRouVideoDomain()}/home')">Rou.Video</a>
                     <a href="javascript:Android.navigateToUrl('https://${domainConfig.getAvJoyDomain()}/')">AvJoy</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getPigAvBaseUrl()}')">PigAV</a>
-                    <a href="javascript:Android.navigateToUrl('${domainConfig.getAvTodayBaseUrl()}cht/index.html')">AVToday</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getAvTodayBaseUrl().trimEnd('/')}/cht/index.html')">AVToday</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getJavHdPornBaseUrl()}')">JavHDPorn</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.get7MmTvBaseUrl()}')">7MMTV</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getAvpleBaseUrl()}')">Avple</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getWhosBaseUrl()}')">Whos.tv</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getJavDbBaseUrl()}')">JavDB</a>
-                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavTrailersBaseUrl()}ja/videos')">JavTrailers</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavTrailersBaseUrl().trimEnd('/')}/ja/videos')">JavTrailers</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getJavGuruBaseUrl()}')">JavGuru</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getSupJavBaseUrl()}')">SupJav</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getNetflavBaseUrl()}')">Netflav</a>
