@@ -21,10 +21,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests
         run: ./gradlew test
+      - name: Generate legacy lint baseline
+        run: test -f app/lint-baseline.xml || ./gradlew updateLintBaseline
       - name: Debug build and lint
         run: ./gradlew assembleDebug lintDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: luma-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: luma-debug-build
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/lint-baseline.xml
+            app/build/reports/lint-results-debug.html
           if-no-files-found: error

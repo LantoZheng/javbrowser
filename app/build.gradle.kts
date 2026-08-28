@@ -33,6 +33,7 @@ android {
     }
     buildFeatures { compose = true }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.4" }
+    lint { baseline = file("lint-baseline.xml") }
 }
 
 dependencies {
