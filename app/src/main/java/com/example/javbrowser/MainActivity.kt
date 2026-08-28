@@ -552,15 +552,15 @@ class MainActivity : LocalizedActivity() {
             })
             put(org.json.JSONObject().apply {
                 put("label", "PigAV")
-                put("template", "https://pigav.ws/search?search={code}&searchTarget=local")
+                put("template", "${domainConfig.getPigAvBaseUrl().trimEnd('/')}/search?search={code}&searchTarget=local")
             })
             put(org.json.JSONObject().apply {
                 put("label", "AVToday")
-                put("template", "https://avtoday.io/search?s={code}")
+                put("template", "${domainConfig.getAvTodayBaseUrl().trimEnd('/')}/search?s={code}")
             })
             put(org.json.JSONObject().apply {
                 put("label", "JavHDPorn")
-                put("template", "https://www.javhdporn.net/?s={code}")
+                put("template", "${domainConfig.getJavHdPornBaseUrl()}?s={code}")
             })
             put(org.json.JSONObject().apply {
                 put("label", "7MMTV")
@@ -573,6 +573,18 @@ class MainActivity : LocalizedActivity() {
             put(org.json.JSONObject().apply {
                 put("label", "Whos.tv")
                 put("template", "https://${domainConfig.getWhosDomain()}/result?search={code}")
+            })
+            put(org.json.JSONObject().apply {
+                put("label", "JavGuru")
+                put("template", "${domainConfig.getJavGuruBaseUrl()}?s={code}")
+            })
+            put(org.json.JSONObject().apply {
+                put("label", "SupJav")
+                put("template", "${domainConfig.getSupJavBaseUrl()}?s={code}")
+            })
+            put(org.json.JSONObject().apply {
+                put("label", "Netflav")
+                put("template", "${domainConfig.getNetflavBaseUrl().trimEnd('/')}/search?type=title&keyword={code}")
             })
         }
         val panelTitle = org.json.JSONObject.quote(if (english) "Cross-site search" else "跨站搜尋")
@@ -595,7 +607,11 @@ class MainActivity : LocalizedActivity() {
                     /(^|\.)7mmtv\.sx$/.test(host) ||
                     /(^|\.)7tv\d*\.com$/.test(host) ||
                     /(^|\.)avple\.tv$/.test(host) ||
-                    /(^|\.)whos\.tv$/.test(host);
+                    /(^|\.)whos\.tv$/.test(host) ||
+                    /(^|\.)jav\.guru$/.test(host) ||
+                    /(^|\.)supjav\.com$/.test(host) ||
+                    /(^|\.)netflav\d*\.com$/.test(host) ||
+                    /(^|\.)sehuata\.com$/.test(host);
                 var panelId = 'jav-cross-site-search';
 
                 if (!supported) {
@@ -772,7 +788,11 @@ class MainActivity : LocalizedActivity() {
                     /(^|\.)7mmtv\.sx$/.test(host) ||
                     /(^|\.)7tv\d*\.com$/.test(host) ||
                     /(^|\.)avple\.tv$/.test(host) ||
-                    /(^|\.)whos\.tv$/.test(host);
+                    /(^|\.)whos\.tv$/.test(host) ||
+                    /(^|\.)jav\.guru$/.test(host) ||
+                    /(^|\.)supjav\.com$/.test(host) ||
+                    /(^|\.)netflav\d*\.com$/.test(host) ||
+                    /(^|\.)sehuata\.com$/.test(host);
                 var stateKey = '__javCrossSiteDetectorState';
 
                 function notify(value) {
@@ -1834,7 +1854,7 @@ class MainActivity : LocalizedActivity() {
                 // view?.evaluateJavascript(removeAdsJs, null) // DISABLED FOR TESTING
 
                 // New MISSAV Ad Blocking Logic
-                if (url?.contains("missav") == true || url?.contains("jable") == true || url?.contains("rou.video") == true || url?.contains("rouva") == true || url?.contains("avjoy.me") == true || url?.contains("javhdporn.net") == true || url?.contains("7mmtv", ignoreCase = true) == true || url?.contains("7tv", ignoreCase = true) == true || url?.contains("avple.tv", ignoreCase = true) == true || url?.contains("whos.tv", ignoreCase = true) == true) {
+                if (url?.contains("missav") == true || url?.contains("jable") == true || url?.contains("rou.video") == true || url?.contains("rouva") == true || url?.contains("avjoy.me") == true || url?.contains("javhdporn.net") == true || url?.contains("7mmtv", ignoreCase = true) == true || url?.contains("7tv", ignoreCase = true) == true || url?.contains("avple.tv", ignoreCase = true) == true || url?.contains("whos.tv", ignoreCase = true) == true || url?.contains("jav.guru", ignoreCase = true) == true || url?.contains("supjav", ignoreCase = true) == true || url?.contains("netflav", ignoreCase = true) == true || url?.contains("sehuata", ignoreCase = true) == true) {
                     val missavAdBlockJs = """
                         (function() {
                             'use strict';
@@ -2311,12 +2331,12 @@ class MainActivity : LocalizedActivity() {
                     function reportFromText(text) {
                         if (!text) return false;
                         var source = normalizeUrl(String(text));
-                        var m3u8 = source.match(/https?:\/\/[^"'\\s<>]+\.m3u8[^"'\\s<>]*/i);
+                        var m3u8 = source.match(/https?:\/\/[^"'\\\s<>]+\.m3u8[^"'\\\s<>]*/i);
                         if (m3u8 && m3u8[0]) {
                             Android.onVideoFound(m3u8[0]);
                             return true;
                         }
-                        var mp4 = source.match(/https?:\/\/[^"'\\s<>]+\.mp4[^"'\\s<>]*/i);
+                        var mp4 = source.match(/https?:\/\/[^"'\\\s<>]+\.mp4[^"'\\\s<>]*/i);
                         if (mp4 && mp4[0]) {
                             Android.onVideoFound(mp4[0]);
                             return true;
@@ -2507,7 +2527,7 @@ class MainActivity : LocalizedActivity() {
 
                     function looksLikePlayableHls(value) {
                         var url = normalizeUrl(value);
-                        return /^https?:\/\/[^"'\\s<>]+\.m3u8[^"'\\s<>]*$/i.test(url) &&
+                        return /^https?:\/\/[^"'\\\s<>]+\.m3u8[^"'\\\s<>]*$/i.test(url) &&
                             /(?:doppiocdn|\/hls\/)/i.test(url);
                     }
 
@@ -2679,7 +2699,7 @@ class MainActivity : LocalizedActivity() {
                     currentVideoReferer = originForUrl(url) ?: "https://pigav.ws/"
                 }
             } else if (url.contains("avtoday.io", ignoreCase = true)) {
-                val match = Regex("""https?://[^\"'\\s<>]+\.m3u8(?:[?#][^\"'\\s<>]*)?""", RegexOption.IGNORE_CASE)
+                val match = Regex("""https?://[^\"'\\\s<>]+\.m3u8(?:[?#][^\"'\\\s<>]*)?""", RegexOption.IGNORE_CASE)
                     .find(rawHtml)
                 extractedUrl = match?.value?.replace("&amp;", "&")
                 if (extractedUrl != null) {
@@ -2749,6 +2769,15 @@ class MainActivity : LocalizedActivity() {
                 if (!mainPlayer.isNullOrBlank()) {
                     extractedUrl = mainPlayer.replace("\\/", "/").replace("&amp;", "&")
                     currentVideoReferer = originForUrl(url) ?: domainConfig.getWhosBaseUrl()
+                }
+            } else if (url.contains("jav.guru", ignoreCase = true) ||
+                url.contains("supjav", ignoreCase = true) ||
+                url.contains("netflav", ignoreCase = true)) {
+                // JavGuru / SupJav / Netflav：頁面內嵌播放器通常直接暴露 HLS/MP4 連結，
+                // 用通用嗅探器掃描整份 HTML 的第一個可播放串流。
+                extractedUrl = VideoExtractor.extractGeneric(rawHtml)
+                if (extractedUrl != null) {
+                    currentVideoReferer = originForUrl(url)
                 }
             } else if (url.contains("javhdporn.net")) {
                 // 全程監控：每秒掃描一次頁面所有 innerHTML / script 內容，
@@ -5599,6 +5628,9 @@ class MainActivity : LocalizedActivity() {
         val search7MmTvLabel = if (english) "Search 7MMTV" else "在 7MMTV 搜尋"
         val searchAvpleLabel = if (english) "Search Avple" else "在 Avple 搜尋"
         val searchWhosLabel = if (english) "Search Whos.tv" else "在 Whos.tv 搜尋"
+        val searchJavGuruLabel = if (english) "Search JavGuru" else "在 JavGuru 搜尋"
+        val searchSupJavLabel = if (english) "Search SupJav" else "在 SupJav 搜尋"
+        val searchNetflavLabel = if (english) "Search Netflav" else "在 Netflav 搜尋"
         val bookmarkSinglePrefix = org.json.JSONObject.quote(if (english) "Add bookmark: " else "存入書籤：")
         val bookmarkBatchPrefix = org.json.JSONObject.quote(if (english) "Add bookmarks (" else "批量存入書籤 (")
         val bookmarkCountSuffix = org.json.JSONObject.quote(if (english) "): " else "個)：")
@@ -5614,6 +5646,9 @@ class MainActivity : LocalizedActivity() {
         val search7MmTvPrefix = org.json.JSONObject.quote("$search7MmTvLabel: ")
         val searchAvplePrefix = org.json.JSONObject.quote("$searchAvpleLabel: ")
         val searchWhosPrefix = org.json.JSONObject.quote("$searchWhosLabel: ")
+        val searchJavGuruPrefix = org.json.JSONObject.quote("$searchJavGuruLabel: ")
+        val searchSupJavPrefix = org.json.JSONObject.quote("$searchSupJavLabel: ")
+        val searchNetflavPrefix = org.json.JSONObject.quote("$searchNetflavLabel: ")
         val adHeadline = if (english) "🐱 Lingmao Games — discounts, bonuses and member perks" else "🐱 靈貓遊戲 - 超低折扣 | 海量福利 | 專屬特權"
         val adAction = if (english) "Tap to download the app" else "點擊下載 APP"
         val landingHtml = """
@@ -5814,6 +5849,9 @@ class MainActivity : LocalizedActivity() {
                         <a href="#" id="search7MMTV">$search7MmTvLabel</a>
                         <a href="#" id="searchAvple">$searchAvpleLabel</a>
                         <a href="#" id="searchWhos">$searchWhosLabel</a>
+                        <a href="#" id="searchJavGuru">$searchJavGuruLabel</a>
+                        <a href="#" id="searchSupJav">$searchSupJavLabel</a>
+                        <a href="#" id="searchNetflav">$searchNetflavLabel</a>
                     </div>
                 </div>
 
@@ -5829,14 +5867,18 @@ class MainActivity : LocalizedActivity() {
                     <a href="javascript:Android.navigateToUrl('https://${domainConfig.getJableDomain()}/')">Jable</a>
                     <a href="javascript:Android.navigateToUrl('https://${domainConfig.getRouVideoDomain()}/home')">Rou.Video</a>
                     <a href="javascript:Android.navigateToUrl('https://${domainConfig.getAvJoyDomain()}/')">AvJoy</a>
-                    <a href="javascript:Android.navigateToUrl('https://pigav.ws/')">PigAV</a>
-                    <a href="javascript:Android.navigateToUrl('https://avtoday.io/cht/index.html')">AVToday</a>
-                    <a href="javascript:Android.navigateToUrl('https://www.javhdporn.net/')">JavHDPorn</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getPigAvBaseUrl()}')">PigAV</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getAvTodayBaseUrl().trimEnd('/')}/cht/index.html')">AVToday</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavHdPornBaseUrl()}')">JavHDPorn</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.get7MmTvBaseUrl()}')">7MMTV</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getAvpleBaseUrl()}')">Avple</a>
                     <a href="javascript:Android.navigateToUrl('${domainConfig.getWhosBaseUrl()}')">Whos.tv</a>
-                    <a href="javascript:Android.navigateToUrl('https://javdb.com/')">JavDB</a>
-                    <a href="javascript:Android.navigateToUrl('https://javtrailers.com/ja/videos')">JavTrailers</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavDbBaseUrl()}')">JavDB</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavTrailersBaseUrl().trimEnd('/')}/ja/videos')">JavTrailers</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getJavGuruBaseUrl()}')">JavGuru</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getSupJavBaseUrl()}')">SupJav</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getNetflavBaseUrl()}')">Netflav</a>
+                    <a href="javascript:Android.navigateToUrl('${domainConfig.getSehuataBaseUrl()}')">Sehuata</a>
                     <a href="javascript:Android.navigateToUrl('https://zt.stripchat.com/')">Stripchat</a>
                     <a href="javascript:Android.navigateToUrl('https://cn.pornhub.com/')">Pornhub CN</a>
                     <a href="javascript:Android.navigateToUrl('https://www.xvideos.com/')">XVideos</a>
@@ -5854,6 +5896,9 @@ class MainActivity : LocalizedActivity() {
                     const search7MMTV = document.getElementById('search7MMTV');
                     const searchAvple = document.getElementById('searchAvple');
                     const searchWhos = document.getElementById('searchWhos');
+                    const searchJavGuru = document.getElementById('searchJavGuru');
+                    const searchSupJav = document.getElementById('searchSupJav');
+                    const searchNetflav = document.getElementById('searchNetflav');
 
                     // ── JAV code detection ──────────────────────────────────────
                     var _javCodes = [];
@@ -5941,17 +5986,23 @@ class MainActivity : LocalizedActivity() {
                             search7MMTV.textContent = $search7MmTvPrefix + keyword;
                             searchAvple.textContent = $searchAvplePrefix + keyword;
                             searchWhos.textContent = $searchWhosPrefix + keyword;
+                            searchJavGuru.textContent = $searchJavGuruPrefix + keyword;
+                            searchSupJav.textContent = $searchSupJavPrefix + keyword;
+                            searchNetflav.textContent = $searchNetflavPrefix + keyword;
 
                             // Update URLs
                             searchMissAV.href = 'https://${domainConfig.getMissAvDomain()}/search/' + encodeURIComponent(keyword);
                             searchJable.href = 'https://jable.tv/search/' + encodeURIComponent(keyword) + '/';
                             searchAvJoy.href = 'https://${domainConfig.getAvJoyDomain()}/search/videos/' + encodeURIComponent(keyword);
-                            searchPigAV.href = 'https://pigav.ws/search?search=' + encodeURIComponent(keyword) + '&searchTarget=local';
-                            searchAVToday.href = 'https://avtoday.io/search?s=' + encodeURIComponent(keyword);
-                            searchJavHD.href = 'https://www.javhdporn.net/?s=' + encodeURIComponent(keyword);
+                            searchPigAV.href = 'https://${domainConfig.getPigAvDomain()}/search?search=' + encodeURIComponent(keyword) + '&searchTarget=local';
+                            searchAVToday.href = 'https://${domainConfig.getAvTodayDomain()}/search?s=' + encodeURIComponent(keyword);
+                            searchJavHD.href = 'https://www.${domainConfig.getJavHdPornDomain()}/?s=' + encodeURIComponent(keyword);
                             search7MMTV.href = 'https://${domainConfig.get7MmTvDomain()}/zh/searchall_search/all/' + encodeURIComponent(keyword) + '/1.html';
                             searchAvple.href = 'https://${domainConfig.getAvpleDomain()}/search?key=' + encodeURIComponent(keyword);
                             searchWhos.href = 'https://${domainConfig.getWhosDomain()}/result?search=' + encodeURIComponent(keyword);
+                            searchJavGuru.href = 'https://${domainConfig.getJavGuruDomain()}/?s=' + encodeURIComponent(keyword);
+                            searchSupJav.href = 'https://${domainConfig.getSupJavDomain()}/?s=' + encodeURIComponent(keyword);
+                            searchNetflav.href = 'https://${domainConfig.getNetflavDomain()}/search?type=title&keyword=' + encodeURIComponent(keyword);
                         } else {
                             searchResults.classList.remove('show');
                         }
@@ -6070,12 +6121,15 @@ class MainActivity : LocalizedActivity() {
             "MissAV" to "${domainConfig.getMissAvBaseUrl().trimEnd('/')}/search/$pathCode",
             "Jable.TV" to "https://jable.tv/search/$pathCode/",
             "AvJoy" to "https://${domainConfig.getAvJoyDomain()}/search/videos/$pathCode",
-            "PigAV" to "https://pigav.ws/search?search=$queryCode&searchTarget=local",
-            "AVToday" to "https://avtoday.io/search?s=$queryCode",
-            "JavHDPorn" to "https://www.javhdporn.net/?s=$queryCode",
+            "PigAV" to "${domainConfig.getPigAvBaseUrl().trimEnd('/')}/search?search=$queryCode&searchTarget=local",
+            "AVToday" to "${domainConfig.getAvTodayBaseUrl().trimEnd('/')}/search?s=$queryCode",
+            "JavHDPorn" to "${domainConfig.getJavHdPornBaseUrl()}?s=$queryCode",
             "7MMTV" to domainConfig.get7MmTvSearchUrl(code),
             "Avple" to domainConfig.getAvpleSearchUrl(code),
             "Whos.tv" to domainConfig.getWhosSearchUrl(code),
+            "JavGuru" to "${domainConfig.getJavGuruBaseUrl()}?s=$queryCode",
+            "SupJav" to "${domainConfig.getSupJavBaseUrl()}?s=$queryCode",
+            "Netflav" to domainConfig.getNetflavSearchUrl(code),
         )
     }
 

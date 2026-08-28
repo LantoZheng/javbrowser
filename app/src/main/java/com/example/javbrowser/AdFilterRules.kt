@@ -146,16 +146,25 @@ class AdFilterRules(private val context: Context) {
 
         private val DEFAULT_RULES = """
         {
-          "version": "3.1.0",
-          "lastUpdate": "2026-08-18T00:00:00Z",
+          "version": "3.2.0",
+          "lastUpdate": "2026-08-28T00:00:00Z",
           "domains": {
-            "missav": "missav.ws",
+            "missav": "missav.ai",
             "jable": "jable.tv",
             "rou_video": "rouva3.xyz",
             "avjoy": "avjoy.me",
             "7mmtv": "7mmtv.sx",
             "avple": "avple.tv",
-            "whos": "whos.tv"
+            "whos": "whos.tv",
+            "pigav": "pigav.ws",
+            "avtoday": "avtoday.io",
+            "javhdporn": "javhdporn.net",
+            "javdb": "javdb.com",
+            "javtrailers": "javtrailers.com",
+            "javguru": "jav.guru",
+            "supjav": "supjav.com",
+            "netflav": "netflav5.com",
+            "sehuata": "sehuata.com"
           },
           "rules": {
             "commonBlock": [
@@ -163,7 +172,6 @@ class AdFilterRules(private val context: Context) {
               "silent-basis.pro",
               "ptelastaxo.com",
               "magsrv.com",
-              "afcdn.net",
               "siscprts.com",
               "exoclick.com",
               "go.mnaspm.com",

@@ -4,7 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com/)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-orange.svg)](https://developer.android.com/)
-[![Rules](https://img.shields.io/badge/ad--filter%20rules-v3.0.1-purple.svg)](ad-filter-rules.json)
+[![Rules](https://img.shields.io/badge/ad--filter%20rules-v3.2.0-purple.svg)](ad-filter-rules.json)
 
 JAV Browser combines a site-aware WebView browser with stream detection, an internal fullscreen player, external-player handoff, direct MP4/HLS downloads, a searchable bookmark library, local-video management, and cloud-updatable ad-filter rules.
 
@@ -126,7 +126,11 @@ Support levels are deliberately separated. A browser shortcut or bookmark adapte
 
 | Website | Browse / Search | Smart Bookmark | Internal Playback | Built-In Download | Notes |
 | --- | :---: | :---: | :---: | :---: | --- |
-| [MISSAV](https://missav.ai/) | Yes | Yes | Yes | Yes | HLS quality detection and parallel segment download are supported when variants are exposed. |
+| [MISSAV](https://missav.ai/) | Yes | Yes | Yes | Yes | HLS quality detection and parallel segment download are supported when variants are exposed. The active domain is managed via the cloud rule file (`missav.ai` by default). |
+| [JavGuru](https://jav.guru/) | Yes | Yes | When detected | When detected | Embedded-player HLS/MP4 sniffing with site-specific ad filtering. |
+| [SupJav](https://supjav.com/) | Yes | Yes | When detected | When detected | Embedded-player HLS/MP4 sniffing with site-specific ad filtering. |
+| [Netflav](https://netflav5.com/) | Yes | Yes | When detected | When detected | Embedded-player HLS/MP4 sniffing; domain rotates, managed via cloud rules. |
+| [Sehuata](https://sehuata.com/) | Yes | No | Web playback | No | Browse-only source with site-specific ad filtering. |
 | [JABLE.TV](https://jable.tv/) | Yes | Yes | Yes | Yes | HLS extraction and authenticated request headers are supported. |
 | ROU.VIDEO / configured ROU mirror | Yes | Yes | When detected | When detected | Availability depends on the active mirror and player structure. |
 | [AVJOY](https://avjoy.me/) | Yes | Yes | When detected | When detected | Includes protected-stream proxy handling and related-page lookup. |
