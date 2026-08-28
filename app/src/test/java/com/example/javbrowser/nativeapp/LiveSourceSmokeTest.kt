@@ -33,7 +33,7 @@ class LiveSourceSmokeTest {
         val details = source.getDetails(result.sourceRef)
         assertTrue("JavDB details failed: ${details.describe()}", details is SourceResult.Success)
         val title = (details as SourceResult.Success).value
-        assertEquals(code, JavIdentity.normalize(title.code))
+        assertEquals(code, JavIdentity.normalize(title.code.orEmpty()))
         println("LIVE_SMOKE javdb PASS code=${title.code} title=${title.title} actors=${title.actors.size}")
     }
 
@@ -63,7 +63,7 @@ class LiveSourceSmokeTest {
         val search = source.search(code)
         assertTrue("${source.displayName} search failed: ${search.describe()}", search is SourceResult.Success)
         val values = (search as SourceResult.Success).value
-        val exact = values.firstOrNull { JavIdentity.normalize(it.title.code) == code }
+        val exact = values.firstOrNull { JavIdentity.normalize(it.title.code.orEmpty()) == code }
         assertTrue("${source.displayName} returned ${values.size} results but no exact $code match", exact != null)
         return requireNotNull(exact)
     }
