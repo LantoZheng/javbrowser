@@ -13,10 +13,12 @@ test_status=0
 # connectedDebugAndroidTest uninstalls its APKs, so reinstall before collecting evidence.
 evidence_status=0
 ./gradlew installDebug --console=plain || evidence_status=$?
-adb shell run-as com.example.javbrowser mkdir -p shared_prefs || evidence_status=$?
+settings_dir='/data/user/0/com.example.javbrowser/shared_prefs'
+settings_file="$settings_dir/native_settings.xml"
+adb shell run-as com.example.javbrowser mkdir -p "$settings_dir" || evidence_status=$?
 settings_xml='<?xml version="1.0" encoding="utf-8" standalone="yes" ?><map><boolean name="secure_screen" value="false" /></map>'
 printf '%s' "$settings_xml" | \
-  adb shell run-as com.example.javbrowser sh -c 'cat > shared_prefs/native_settings.xml' || evidence_status=$?
+  adb shell run-as com.example.javbrowser tee "$settings_file" > /dev/null || evidence_status=$?
 adb shell am force-stop com.example.javbrowser || true
 adb shell am start -W -n com.example.javbrowser/.nativeapp.NativeMainActivity \
   > "$report_dir/launch.txt" 2>&1 || evidence_status=$?
