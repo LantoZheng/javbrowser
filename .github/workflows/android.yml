@@ -1,6 +1,7 @@
 name: Android CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, rewrite/native-jav-client]
   pull_request:
@@ -69,6 +70,7 @@ jobs:
           if-no-files-found: warn
 
   live-source-smoke:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     continue-on-error: true
