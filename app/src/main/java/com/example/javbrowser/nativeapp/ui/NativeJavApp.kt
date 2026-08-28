@@ -1,4 +1,7 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.media3.common.util.UnstableApi::class,
+)
 
 package com.example.javbrowser.nativeapp.ui
 
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -119,7 +123,7 @@ fun NativeJavApp(repository: JavRepository, library: LibraryStore, incoming: Str
 @Composable private fun SourceStatus(states:Map<String,SourceLoadState>) { if(states.isNotEmpty()) LazyRow(contentPadding=PaddingValues(16.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){ items(states.entries.toList()){(id,status)-> val text=when(status){SourceLoadState.Loading->"$id · …";is SourceLoadState.Success->"$id · ${status.count}";is SourceLoadState.Error->"$id · ${if(status.verificationRequired) stringResource(R.string.verify) else stringResource(R.string.unavailable)}"}; Surface(shape=RoundedCornerShape(12.dp),color=MaterialTheme.colorScheme.surfaceContainer){Row(Modifier.padding(horizontal=12.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically){when(status){SourceLoadState.Loading->CircularProgressIndicator(Modifier.size(14.dp),strokeWidth=2.dp);is SourceLoadState.Success->Icon(Icons.Default.Check,null,Modifier.size(16.dp));is SourceLoadState.Error->Icon(Icons.Default.Warning,null,Modifier.size(16.dp))};Spacer(Modifier.width(6.dp));Text(text)}} } } }
 
 @Composable private fun MediaGrid(titles:List<JavTitle>,onSelect:(JavTitle)->Unit) { LazyColumn(contentPadding=PaddingValues(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){items(titles,key={it.id}){MediaRow(it,onSelect)}} }
-@Composable private fun MediaRow(title:JavTitle,onSelect:(JavTitle)->Unit){ Card(Modifier.fillMaxWidth().clickable{onSelect(title)},shape=RoundedCornerShape(16.dp)){Row(Modifier.padding(10.dp),verticalAlignment=Alignment.CenterVertically){Poster(title,90.dp,126.dp);Spacer(Modifier.width(14.dp));Column(Modifier.weight(1f)){Text(title.code ?: stringResource(R.string.unknown_code),color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold);Text(title.title,maxLines=2,overflow=TextOverflow.Ellipsis);Spacer(Modifier.height(8.dp));Text(stringResource(R.string.sources_available,title.sourceRefs.size),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}}} }
+@Composable private fun MediaRow(title:JavTitle,onSelect:(JavTitle)->Unit){ Card(Modifier.fillMaxWidth().clickable{onSelect(title)},shape=RoundedCornerShape(16.dp)){Row(Modifier.padding(10.dp),verticalAlignment=Alignment.CenterVertically){Poster(title,90.dp,126.dp);Spacer(Modifier.width(14.dp));Column(Modifier.weight(1f)){Text(title.code ?: stringResource(R.string.unknown_code),color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold);Text(title.title,maxLines=2,overflow=TextOverflow.Ellipsis);Spacer(Modifier.height(8.dp));Text(pluralStringResource(R.plurals.sources_available,title.sourceRefs.size,title.sourceRefs.size),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}}} }
 @Composable private fun Poster(title:JavTitle,w:androidx.compose.ui.unit.Dp,h:androidx.compose.ui.unit.Dp){AsyncImage(title.coverUrl,contentDescription=title.title,contentScale=ContentScale.Crop,modifier=Modifier.size(w,h).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainer))}
 @Composable private fun LoadingGrid(){LazyColumn(contentPadding=PaddingValues(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){items(5){Box(Modifier.fillMaxWidth().height(136.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer))}}}
 @Composable private fun MediaSection(title:String,items:List<JavTitle>,onSelect:(JavTitle)->Unit){Column{Text(title,style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.SemiBold);Spacer(Modifier.height(12.dp));LazyRow(horizontalArrangement=Arrangement.spacedBy(12.dp)){items(items,key={it.id}){item->Column(Modifier.width(126.dp).clickable{onSelect(item)}){Poster(item,126.dp,176.dp);Spacer(Modifier.height(8.dp));Text(item.code?:item.title,maxLines=1,overflow=TextOverflow.Ellipsis)}}}}}
